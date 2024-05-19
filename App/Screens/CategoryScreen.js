@@ -1,17 +1,14 @@
-import { Text, StyleSheet, View, Dimensions } from "react-native";
+import { StyleSheet, View } from "react-native";
 
-import AppBackButton from "../components/AppBackButton";
 import { categories } from "../../api";
 import AppCategoryBox from "../components/AppCategoryBox.";
-
-// const width = Dimensions.get("window").width;
-// console.log(width);
+import AppHeader from "../components/AppHeader";
 
 const CategoryScreen = () => {
   return (
     <View style={styles.container}>
-      <AppBackButton />
-      <Text style={styles.header}>Categories</Text>
+      <AppHeader text={"Categories"} />
+
       <View style={styles.categories}>
         <AppCategoryBox text={"All"} />
         {categories.map((category, index) => {
@@ -30,14 +27,8 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    padding: 15,
-    // backgroundColor: colors.light
-  },
-  header: {
-    textAlign: "center",
-    fontSize: 20,
-    fontWeight: "600",
-    marginBottom: 25,
+    paddingHorizontal: 15,
+    backgroundColor: colors.white,
   },
 });
 

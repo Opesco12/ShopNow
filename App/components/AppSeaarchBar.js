@@ -1,11 +1,37 @@
 import { StyleSheet, Text, TextInput, View } from "react-native";
+import { useEffect, useState } from "react";
 import { Feather } from "@expo/vector-icons";
 
-const AppSearchBar = ({ style }) => {
+import colors from "../config/colors";
+
+const AppSearchBar = ({ handleSearch, style, value }) => {
+  const [search, setSearch] = useState("");
+
+  const handleTextChange = (newText) => {
+    setSearch(newText);
+  };
+
+  useEffect(() => {
+    if (value) {
+      setSearch(value);
+      handleSearch(value);
+    }
+  }, [value]);
   return (
     <View style={[styles.container, style]}>
-      <TextInput placeholder="Search" style={styles.input} />
-      <Feather name="search" size={24} onPress={() => console.log("Tapped")} />
+      <TextInput
+        placeholder="Search"
+        style={styles.input}
+        value={search}
+        onChangeText={handleTextChange}
+      />
+      <Feather
+        name="search"
+        size={24}
+        onPress={() => {
+          if (search.length > 0) handleSearch(search);
+        }}
+      />
     </View>
   );
 };

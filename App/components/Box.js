@@ -1,10 +1,16 @@
 import { Text, StyleSheet, View, Image, TouchableOpacity } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import colors from "../config/colors";
+import { useNavigation } from "@react-navigation/native";
 
 const Box = ({ product }) => {
+  const Navigation = useNavigation();
+
   return (
-    <TouchableOpacity style={styles.container}>
+    <TouchableOpacity
+      style={styles.container}
+      onPress={() => Navigation.navigate("Product", { product: product })}
+    >
       <View style={styles.imageContainer}>
         <Image src={product.thumbnail} style={styles.image} />
       </View>

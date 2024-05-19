@@ -1,17 +1,30 @@
-import { StyleSheet, ScrollView, Image, Text, View } from "react-native";
+import {
+  StyleSheet,
+  ScrollView,
+  Image,
+  Text,
+  View,
+  Pressable,
+  ActivityIndicator,
+  FlatList,
+} from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useFonts } from "expo-font";
-import { Axios } from "axios";
+import { useNavigation } from "@react-navigation/native";
+import { useState, useRef, useEffect } from "react";
+import axios from "axios";
+import SwiperFlatList from "react-native-swiper-flatlist";
 
 import colors from "../config/colors";
 import AppTextInput from "../components/AppTextInput";
 import AppCategoryBox from "../components/AppCategoryBox.";
 import Box from "../components/Box";
-import { products, categories } from "../../api";
-import { useState } from "react";
+import { categories } from "../../api";
 import AppSearchBar from "../components/AppSeaarchBar";
 
 const HomeScreen = () => {
+  const [products, setProducts] = useState([]);
+  const [isFetching, setIsFetching] = useState(false);
   const [loaded, error] = useFonts({
     poppins: require("../assets/fonts/Poppins/Poppins-Regular.ttf"),
   });
@@ -24,97 +37,125 @@ const HomeScreen = () => {
     SetSelectedCategory(text);
   };
 
+  const Navigation = useNavigation();
+
+  const handleSearch = (searchText) => {
+    Navigation.navigate("Search", { searchText: searchText });
+  };
+
+  const handleCategorySelection = (category) => {
+    Navigation.navigate("Category", { category: category });
+  };
+
+  useEffect(() => {
+    setIsFetching(true);
+    axios
+      .get("https://dummyjson.com/products")
+      .then((res) => {
+        setProducts(res.data.products);
+        setTimeout(() => {
+          setIsFetching(false);
+        }, 1500);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
   return (
-    <>
-      {loaded && (
-        <View style={styles.container}>
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            alwaysBounceVertical={true}
-          >
-            <View
-              style={{
-                alignItems: "center",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                marginTop: 10,
-              }}
-            >
-              <Text style={{ fontSize: 25, fontWeight: "700" }}>Discover</Text>
-              <Feather name="shopping-cart" size={22} />
-            </View>
-
-            <AppSearchBar />
-
-            <Image
-              source={require("../assets/Clearance Sales.png")}
-              style={styles.promoImage}
+    <View style={styles.container}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        stickyHeaderIndices={[0, 3]}
+        stickyHeaderHiddenOnScroll={false}
+      >
+        <View style={{ backgroundColor: colors.white }}>
+          <View style={styles.top}>
+            <Text style={styles.appName}>Discover</Text>
+            <Feather
+              name="shopping-cart"
+              size={22}
+              onPress={() => Navigation.navigate("Cart")}
             />
-            <View style={styles.categories}>
-              <View
-                style={{
-                  alignItems: "center",
-                  flexDirection: "row",
-                  marginBottom: 5,
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text style={{ fontSize: 22, fontWeight: "700" }}>
-                  Categories
-                </Text>
-                <Text
-                  style={{
+          </View>
+        </View>
+
+        <AppSearchBar handleSearch={handleSearch} />
+
+        <Image
+          source={require("../assets/Clearance Sales.png")}
+          style={styles.promoImage}
+        />
+
+        <View style={styles.categories}>
+          <View style={styles.stickyHeader}>
+            <Text style={styles.stickyHeaderText}>Categories</Text>
+            <Pressable onPress={() => Navigation.navigate("Categories")}>
+              <Text
+                style={[
+                  styles.stickyHeaderText,
+                  {
                     color: colors.primary,
                     fontSize: 15,
-                    fontWeight: "700",
-                  }}
-                >
-                  See all
-                </Text>
-              </View>
-
-              <ScrollView
-                alwaysBounceHorizontal={true}
-                horizontal
-                showsHorizontalScrollIndicator={false}
+                  },
+                ]}
               >
-                <View
-                  style={{ flexDirection: "row", gap: 7, marginBottom: 10 }}
-                >
+                See all
+              </Text>
+            </Pressable>
+          </View>
+
+          <ScrollView
+            alwaysBounceHorizontal={true}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+          >
+            <View style={{ flexDirection: "row", gap: 7, marginBottom: 10 }}>
+              <AppCategoryBox
+                text={"All"}
+                selected={selectedCategory}
+                select={handleSelect}
+                onPress={handleCategorySelection}
+              />
+              {categories.map((category, index) => {
+                return (
                   <AppCategoryBox
-                    text={"All"}
+                    text={category}
+                    key={index}
                     selected={selectedCategory}
                     select={handleSelect}
+                    onPress={handleCategorySelection}
                   />
-                  {categories.map((category, index) => {
-                    return (
-                      <AppCategoryBox
-                        text={category}
-                        key={index}
-                        selected={selectedCategory}
-                        select={handleSelect}
-                      />
-                    );
-                  })}
-                </View>
-              </ScrollView>
-            </View>
-
-            <View style={styles.products}>
-              {products.map((product, index) => {
-                return <Box key={index} product={product} />;
+                );
               })}
             </View>
           </ScrollView>
         </View>
-      )}
-    </>
+
+        {isFetching ? (
+          <View>
+            <ActivityIndicator color={colors.primary} size={"large"} />
+          </View>
+        ) : (
+          <View style={styles.products}>
+            {products.map((product, index) => {
+              return <Box key={index} product={product} />;
+            })}
+          </View>
+        )}
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  categories: {},
+  appName: {
+    fontSize: 25,
+    fontWeight: "700",
+  },
+  categories: {
+    backgroundColor: colors.white,
+  },
   container: {
+    backgroundColor: colors.white,
     flex: 1,
     paddingHorizontal: 10,
   },
@@ -128,6 +169,23 @@ const styles = StyleSheet.create({
   promoImage: {
     resizeMode: "contain",
     width: "100%",
+  },
+  stickyHeader: {
+    alignItems: "center",
+    flexDirection: "row",
+    marginBottom: 5,
+    justifyContent: "space-between",
+  },
+  stickyHeaderText: {
+    fontSize: 22,
+    fontWeight: "700",
+  },
+  top: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+    paddingVertical: 5,
   },
 });
 

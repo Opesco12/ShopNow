@@ -2,9 +2,9 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import colors from "../config/colors";
 
-const AppButtonBg = ({ text, compStyle }) => {
+const AppButtonBg = ({ text, compStyle, onPress }) => {
   return (
-    <TouchableOpacity>
+    <TouchableOpacity onPress={onPress}>
       <View
         style={[
           styles.button,
@@ -20,9 +20,9 @@ const AppButtonBg = ({ text, compStyle }) => {
   );
 };
 
-const AppButton = ({ text }) => {
+const AppButton = ({ text, onPress }) => {
   return (
-    <TouchableOpacity>
+    <TouchableOpacity onPress={onPress}>
       <View style={[styles.button, { backgroundColor: "#00000044" }]}>
         <Text style={{ color: colors.primary, fontSize: 18, fontWeight: 600 }}>
           {text}

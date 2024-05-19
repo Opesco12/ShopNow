@@ -1,11 +1,19 @@
-import { Text, StyleSheet, View } from "react-native";
+import { TouchableOpacity, StyleSheet, View, Pressable } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 
 const AppBackButton = ({ compStyle }) => {
+  const Navigation = useNavigation();
+  const handleGoBack = () => {
+    Navigation.goBack();
+  };
   return (
-    <View style={[styles.backButton, compStyle]}>
+    <TouchableOpacity
+      onPress={handleGoBack}
+      style={[styles.backButton, compStyle]}
+    >
       <MaterialCommunityIcons name="chevron-left" size={34} />
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -17,7 +25,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     left: 20,
     top: 10,
-    position: "absolute",
     backgroundColor: colors.white,
     width: 37,
   },

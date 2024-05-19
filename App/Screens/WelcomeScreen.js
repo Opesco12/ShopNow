@@ -2,19 +2,20 @@ import React from "react";
 import {
   Dimensions,
   ImageBackground,
-  StatusBar,
   StyleSheet,
   Text,
   View,
 } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 import colors from "../config/colors";
 import { AppButton, AppButtonBg } from "../components/Button";
 
 const screenHeight = Dimensions.get("window").height;
-const screenWdith = Dimensions.get("window").width;
+const screenWidth = Dimensions.get("window").width;
 
 const WelcomeSceen = () => {
+  const Navigation = useNavigation();
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -23,7 +24,10 @@ const WelcomeSceen = () => {
       >
         <View style={{ width: "100%" }}>
           <Text style={styles.text}>Start Your Shopping Journey Now</Text>
-          <AppButton text={"Login"} />
+          <AppButton
+            text={"Login"}
+            onPress={() => Navigation.navigate("Login")}
+          />
           <AppButtonBg text={"Sign Up"} />
         </View>
       </ImageBackground>
@@ -40,7 +44,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     height: screenHeight,
     padding: 20,
-    width: screenWdith,
+    width: screenWidth,
   },
   text: {
     color: "#fff",

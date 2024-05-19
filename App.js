@@ -1,33 +1,23 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
-import colors from "./App/config/colors";
-import HomeScreen from "./App/Screens/HomeScreen";
-import LoginScreen from "./App/Screens/LoginScreen";
-import SignUpScreen from "./App/Screens/SignUpScreen";
+import FlashMessage from "react-native-flash-message";
 
-import WelcomeScreen from "./App/Screens/WelcomeScreen";
+import CartProvider from "./App/context/CartProvider";
+import Navigator from "./App/navigation/Navigator";
+
+import colors from "./App/config/colors";
 import ProductDeatails from "./App/Screens/ProductDetails";
-import Cart from "./App/Screens/Cart";
-import CategoryScreen from "./App/Screens/CategoryScreen";
-import SearchScreen from "./App/Screens/SearchScreen";
-import ProfileScreen from "./App/Screens/ProfileScreen";
-import CheckOutScreen from "./App/Screens/CheckoutScreen";
+import FavoritesProvider from "./App/context/FavoritesProvider";
 
 export default function App() {
   return (
-    <>
-      {/* <WelcomeScreen /> */}
-      {/* <LoginScreen /> */}
-      {/* <SignUpScreen /> */}
-      {/* <ProductDeatails /> */}
-      {/* <Cart /> */}
-      <StatusBar translucent={false} backgroundColor={colors.light} />
-      {/* <HomeScreen /> */}
-      {/* <CategoryScreen /> */}
-      {/* <SearchScreen /> */}
-      <ProfileScreen />
-      {/* <CheckOutScreen /> */}
-    </>
+    <CartProvider>
+      <FavoritesProvider>
+        <StatusBar translucent={false} backgroundColor={colors.light} />
+        <Navigator />
+        <FlashMessage position={"top"} />
+      </FavoritesProvider>
+    </CartProvider>
   );
 }
 

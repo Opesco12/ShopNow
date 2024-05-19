@@ -1,9 +1,14 @@
 import { StyleSheet, Text, TextInput, View } from "react-native";
 
-const AppTextInput = ({ placeholder, icon }) => {
+const AppTextInput = ({ placeholder, type, ...otherProps }) => {
   return (
     <View>
-      <TextInput placeholder={placeholder} style={styles.input} />
+      <TextInput
+        placeholder={placeholder}
+        style={styles.input}
+        keyboardType={type}
+        {...otherProps}
+      />
     </View>
   );
 };
