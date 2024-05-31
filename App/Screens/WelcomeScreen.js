@@ -8,7 +8,6 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-import colors from "../config/colors";
 import { AppButton, AppButtonBg } from "../components/Button";
 
 const screenHeight = Dimensions.get("window").height;

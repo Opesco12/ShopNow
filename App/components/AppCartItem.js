@@ -14,13 +14,13 @@ import CartContext from "../context/CartContext";
 import { useNavigation } from "@react-navigation/native";
 
 const AppCartItem = ({
+  cartLength,
   product,
   onPress,
   handleAddToCart,
   handleRemoveFromCart,
   handleRemoveProductFromCart,
 }) => {
-  const [count, setCount] = useState(1);
   const Navigation = useNavigation();
   return (
     <Pressable
@@ -60,7 +60,9 @@ const AppCartItem = ({
             <View style={styles.bottomRight}>
               <TouchableWithoutFeedback
                 onPress={() => {
-                  handleRemoveFromCart(product);
+                  if (cartLength > 1) {
+                    handleRemoveFromCart(product);
+                  }
                 }}
               >
                 <View style={styles.smallBox}>

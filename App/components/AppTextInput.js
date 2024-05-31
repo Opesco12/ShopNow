@@ -1,5 +1,7 @@
 import { StyleSheet, Text, TextInput, View } from "react-native";
 
+import colors from "../config/colors";
+
 const AppTextInput = ({ placeholder, type, ...otherProps }) => {
   return (
     <View>

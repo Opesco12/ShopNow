@@ -1,59 +1,32 @@
-import { StyleSheet, Text, Modal, View, Pressable, Button } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { useContext, useEffect, useState } from "react";
-import { FlutterwaveButton } from "flutterwave-react-native";
-import axios from "axios";
-import FlutterwaveCheckout from "flutterwave-react-native";
+import { PayWithFlutterwave } from "flutterwave-react-native";
+import { showMessage } from "react-native-flash-message";
 
-import AppBackButton from "../components/AppBackButton";
 import colors from "../config/colors";
 import AppHeader from "../components/AppHeader";
-import { AppButtonBg } from "../components/Button";
 import CartContext from "../context/CartContext";
+import { useNavigation } from "@react-navigation/native";
 
 const CheckOutScreen = () => {
-  // FlutterwaveCheckout.set
   const [deliveryFee, setDeliveryFee] = useState(0);
   const [subtotalPrice, setSubTotalPrice] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
 
-  const { getSubTotalPrice, getDeliveryFee, discount, getTotalPrice } =
+  const { getSubTotalPrice, getDeliveryFee, discount, getTotalPrice, setCart } =
     useContext(CartContext);
 
-  const handleCheckout = async () => {
-    const flutterwavePublicKey =
-      "FLWPUBK_TEST-53a9b043f7ea87a0b4c883b212d038a0-X";
-    const paymentData = {
-      tx_ref: "unique-reference-id",
-      amount: totalPrice,
-      currency: "NGN",
-      // redirect_url: "https://your-redirect-url.com",
-      payment_options: "card",
-      customer: {
-        email: "customer@example.com",
-        phonenumber: "08145298341",
-        name: "John Doe",
-      },
-    };
-
-    try {
-      const response = await axios.post(
-        "https://api.flutterwave.com/v3/payments",
-        paymentData,
-        {
-          headers: {
-            Authorization: `Bearer ${flutterwavePublicKey}`,
-            "Content-Type": "application/json",
-          },
-        }
+  const generateRef = (length) => {
+    var a =
+      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".split(
+        ""
       );
-
-      console.log(response.data);
-      // Handle the response data, which includes the payment link or payment instructions
-    } catch (error) {
-      console.error(error);
-      // Handle the error
+    var b = [];
+    for (var i = 0; i < length; i++) {
+      var j = (Math.random() * (a.length - 1)).toFixed(0);
+      b[i] = a[j];
     }
+    return b.join("");
   };
 
   useEffect(() => {
@@ -61,6 +34,7 @@ const CheckOutScreen = () => {
     setDeliveryFee(getDeliveryFee());
     setTotalPrice(getTotalPrice());
   }, []);
+  const Navigation = useNavigation();
   return (
     <View style={styles.container}>
       <AppHeader text={"Checkout"} showCartIcon={false} />
@@ -107,33 +81,29 @@ const CheckOutScreen = () => {
             policy
           </Text>
         </View>
-        <AppButtonBg
-          text={"Submit Order"}
-          onPress={() => setIsVisible(!isVisible)}
-        />
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={isVisible}
-          onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
-            setModalVisible(!modalVisible);
+        <PayWithFlutterwave
+          onRedirect={(response) => {
+            if (response.status === "successful") {
+              showMessage({ message: "Payment Succesful", type: "success" });
+              setCart([]);
+              Navigation.navigate("Cart");
+            } else {
+              showMessage({ message: "Payment failed", type: "danger" });
+            }
           }}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Pressable onPress={() => setIsVisible(!isVisible)}>
-                <Text style={styles.cancel}>cancel</Text>
-              </Pressable>
-              <FlutterwaveButton
-                style={styles.paymentButton}
-                // disabled={disabled}
-              >
-                <Text style={styles.paymentButtonText}>Pay ${totalPrice}</Text>
-              </FlutterwaveButton>
-            </View>
-          </View>
-        </Modal>
+          onAbort={() => {
+            showMessage({ message: "Payment failed", type: "danger" });
+          }}
+          options={{
+            tx_ref: generateRef(11),
+            amount: totalPrice,
+            currency: "USD",
+            customer: {
+              email: "oyelekemmanuel@gmail.com",
+            },
+            authorization: "FLWPUBK_TEST-53a9b043f7ea87a0b4c883b212d038a0-X",
+          }}
+        />
       </View>
     </View>
   );

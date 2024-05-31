@@ -1,4 +1,4 @@
-import { StyleSheet, View, FlatList } from "react-native";
+import { StyleSheet, View, Text, FlatList } from "react-native";
 import { useState, useContext, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 
@@ -55,6 +55,7 @@ const Cart = () => {
                 handleAddToCart={handleAddToCart}
                 handleRemoveFromCart={reduceQuantity}
                 handleRemoveProductFromCart={removeProductFromCart}
+                cartLength={cart.length}
               />
             )}
             ItemSeparatorComponent={() => <ListItemSeparator />}
